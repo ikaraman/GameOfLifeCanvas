@@ -1,2 +1,2 @@
-# GameOfLifeCanvas
-Using canvas to display GameOfLife in browser
+# GameOfLife
+Training
