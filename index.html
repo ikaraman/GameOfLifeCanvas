@@ -4,10 +4,10 @@
     <script>
         window.onload = function () {
 
-            let worldSize = 400,
-                worldBorder = 100   ;
+            let worldSize = 500,
+                worldBorder = 50;
             let world = createWorld(),
-                newWorld = world;
+                newWorld = copy(world);
 
             let canvas = document.getElementById("myCanvas");
             let ctx = canvas.getContext("2d");
@@ -17,13 +17,11 @@
             tick();
 
 
-            //-------------------
             function tick() {
                 drawWorld();
                 updateWorld();
                 requestAnimationFrame(tick);
             }
-
 
 
             function createWorld() {
@@ -46,8 +44,8 @@
 
             function drawWorld() {
                 ctx.clearRect(0, 0, worldSize, worldSize);
-                for (let x = 10; x < worldSize; x++) {
-                    for (let y = 10; y < worldSize; y++) {
+                for (let x = 0; x < worldSize; x++) {
+                    for (let y = 0; y < worldSize; y++) {
                         if (world[x][y] === 1) {
                             ctx.fillRect(x, y, 1, 1);
                         }
@@ -55,12 +53,22 @@
                 }
             }
 
+            function copy(object) {
+                let output, v, key;
+                output = Array.isArray(object) ? [] : {};
+                for (key in object) {
+                    v = object[key];
+                    output[key] = (typeof v === "object") ? copy(v) : v;
+                }
+                return output;
+            }
+
             function updateWorld() {
                 let liveCellsAround = 0;
                 for (let x = 0; x < worldSize; x++) {
                     for (let y = 0; y < worldSize; y++) {
                         liveCellsAround =
-                            ((x > 0 && y > 0) ? world[x - 1][y - 1] : 0) +                               //top left
+                            ((x > 0 && y > 0) ? world[x - 1][y - 1] : 0) +                                //top left
                             ((x > 0) ? world[x - 1][y] : 0) +                                             //top
                             ((x > 0 && y < world.length - 1) ? world[x - 1][y + 1] : 0) +                 //top right
                             ((y < world.length - 1) ? world[x][y + 1] : 0) +                              //right
@@ -69,14 +77,9 @@
                             ((x < world.length - 1 && y > 0) ? world[x + 1][y - 1] : 0) +                 //bottom left
                             ((y > 0) ? world[x][y - 1] : 0);
 
-                        //apply the rules to each cell
                         switch (liveCellsAround) {
                             case 2:
-                                if (world[x][y] === 1) {
-                                    newWorld[x][y] = 1;
-                                } else {
-                                    newWorld[x][y] = 0;
-                                }
+                                if (world[x][y] === 1) newWorld[x][y] = 1;
                                 break;
                             case 3:
                                 newWorld[x][y] = 1;
@@ -87,11 +90,7 @@
                         }
                     }
                 }
-
-                //swap
-                let temp = world;
-                world = newWorld;
-                newWorld = temp;
+                world = copy(newWorld);
             }
         }
     </script>
@@ -102,6 +101,6 @@
 </head>
 
 <body>
-<canvas id="myCanvas" width="400" height="400" style="background-color: #7f7f7f">Canvas not supported</canvas>
+<canvas id="myCanvas" width="500" height="500" style="background-color: #d1d1d1; border-style: solid; border-color: dimgray">Canvas not supported</canvas>
 </body>
 </html>
